@@ -71,6 +71,12 @@
         </li>
         <?php endif; ?>
         
+        <li <?= strpos($_SERVER['PHP_SELF'], 'gamification.php') !== false ? 'class="active"' : '' ?>>
+            <a href="<?= BASE_URL ?>/gamification.php">
+                <i class="fas fa-trophy"></i> Gamificação
+            </a>
+        </li>
+        
         <li>
             <a href="<?= BASE_URL ?>/about.php">
                 <i class="fas fa-info-circle"></i> Sobre

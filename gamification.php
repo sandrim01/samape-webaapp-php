@@ -18,6 +18,9 @@ require_once 'includes/gamification.php';
 // Require user to be logged in
 require_login();
 
+// Get database connection
+$db = $GLOBALS['db'];
+
 // Initialize variables
 $error = '';
 $success = '';
