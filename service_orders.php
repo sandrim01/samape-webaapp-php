@@ -142,6 +142,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $data_fechamento
                     ]);
                 }
+                
+                // Get employees associated with this service order for gamification
+                $stmt = $db->prepare("SELECT funcionario_id FROM os_funcionarios WHERE ordem_id = ?");
+                $stmt->execute([$id]);
+                $employee_ids = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+                
+                // Get satisfaction rating if provided
+                $satisfaction_rating = null;
+                if (isset($_POST['satisfaction_rating']) && is_numeric($_POST['satisfaction_rating'])) {
+                    $satisfaction_rating = min(5, max(0, (float)$_POST['satisfaction_rating']));
+                    
+                    // Update the satisfaction rating in the service order
+                    $stmt = $db->prepare("UPDATE ordens_servico SET satisfaction_rating = ? WHERE id = ?");
+                    $stmt->execute([$satisfaction_rating, $id]);
+                }
+                
+                // Update employee gamification stats
+                if (!empty($employee_ids)) {
+                    update_employee_stats_after_service($db, $id, $employee_ids, $satisfaction_rating);
+                }
             }
             
             // Update service order
