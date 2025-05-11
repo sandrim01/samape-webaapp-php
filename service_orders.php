@@ -571,6 +571,21 @@ include_once 'includes/header.php';
                 </div>
             </div>
             
+            <div class="mb-3" id="satisfaction_container" style="<?= $service_order['status'] !== STATUS_COMPLETED ? 'display: none;' : '' ?>">
+                <label for="satisfaction_rating" class="form-label">Avaliação do Cliente</label>
+                <div class="rating-stars">
+                    <?php
+                    $current_rating = isset($service_order['satisfaction_rating']) ? (int)$service_order['satisfaction_rating'] : 0;
+                    for ($i = 5; $i >= 1; $i--): ?>
+                        <input type="radio" name="satisfaction_rating" id="rating-<?= $i ?>" value="<?= $i ?>" <?= $current_rating === $i ? 'checked' : '' ?>>
+                        <label for="rating-<?= $i ?>"><i class="fas fa-star"></i></label>
+                    <?php endfor; ?>
+                </div>
+                <div class="rating-text small text-muted mt-1">
+                    Selecione de 1 a 5 estrelas para classificar a satisfação do cliente com o serviço
+                </div>
+            </div>
+            
             <div class="mb-3">
                 <label for="descricao" class="form-label required">Descrição do Serviço</label>
                 <textarea class="form-control" id="descricao" name="descricao" rows="4" required><?= htmlspecialchars($service_order['descricao']) ?></textarea>
@@ -776,3 +791,21 @@ document.addEventListener('DOMContentLoaded', function() {
 // Include page footer
 include_once 'includes/footer.php';
 ?>
+
+<script>
+// Add scripts for service order page
+document.addEventListener('DOMContentLoaded', function() {
+    // Show/hide valor and satisfaction fields based on status
+    const statusSelect = document.getElementById('status');
+    const valorContainer = document.getElementById('valor_container');
+    const satisfactionContainer = document.getElementById('satisfaction_container');
+    
+    if (statusSelect && valorContainer && satisfactionContainer) {
+        statusSelect.addEventListener('change', function() {
+            const isCompleted = this.value === '<?= STATUS_COMPLETED ?>';
+            valorContainer.style.display = isCompleted ? 'block' : 'none';
+            satisfactionContainer.style.display = isCompleted ? 'block' : 'none';
+        });
+    }
+});
+</script>
