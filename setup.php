@@ -37,6 +37,10 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== ROLE_ADMIN) {
 
 // Initialize the database schema (again if needed)
 try {
+    // Initialize gamification tables
+    require_once 'includes/gamification.php';
+    setup_gamification_tables($db);
+    
     $success = true;
     $message = "Sistema inicializado com sucesso!";
 } catch (PDOException $e) {

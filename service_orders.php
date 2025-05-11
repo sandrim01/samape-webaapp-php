@@ -293,7 +293,7 @@ if ($action === 'list') {
         // Build main query
         $query = "
             SELECT 
-                os.id, os.cliente_id, os.descricao, os.status, os.data_abertura, os.data_fechamento, os.valor_total,
+                os.id, os.cliente_id, os.descricao, os.status, os.data_abertura, os.data_fechamento, os.valor_total, os.satisfaction_rating,
                 c.nome as client_name, m.tipo as machinery_type, m.marca as machinery_brand, m.modelo as machinery_model
             FROM ordens_servico os
             JOIN clientes c ON os.cliente_id = c.id

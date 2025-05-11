@@ -99,6 +99,7 @@ class Database {
             data_abertura DATE NOT NULL,
             data_fechamento DATE,
             valor_total DECIMAL(10,2),
+            satisfaction_rating FLOAT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (cliente_id) REFERENCES clientes(id),
