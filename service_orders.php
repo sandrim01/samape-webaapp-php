@@ -387,13 +387,14 @@ include_once 'includes/header.php';
                         <th>Abertura</th>
                         <th>Fechamento</th>
                         <th>Valor</th>
+                        <th>Avaliação</th>
                         <th class="text-end">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (empty($service_orders)): ?>
                     <tr>
-                        <td colspan="8" class="text-center">Nenhuma ordem de serviço encontrada.</td>
+                        <td colspan="9" class="text-center">Nenhuma ordem de serviço encontrada.</td>
                     </tr>
                     <?php else: ?>
                     <?php foreach ($service_orders as $os): ?>
@@ -405,6 +406,24 @@ include_once 'includes/header.php';
                         <td><?= format_date($os['data_abertura']) ?></td>
                         <td><?= format_date($os['data_fechamento']) ?></td>
                         <td><?= $os['valor_total'] ? format_currency($os['valor_total']) : '-' ?></td>
+                        <td>
+                            <?php if (isset($os['satisfaction_rating']) && $os['satisfaction_rating'] > 0): ?>
+                                <div class="service-rating">
+                                <?php 
+                                $rating = $os['satisfaction_rating'];
+                                for($i=1; $i<=5; $i++) {
+                                    if($i <= $rating) {
+                                        echo '<i class="fas fa-star text-warning"></i>';
+                                    } else {
+                                        echo '<i class="far fa-star text-warning"></i>';
+                                    }
+                                }
+                                ?>
+                                </div>
+                            <?php else: ?>
+                                -
+                            <?php endif; ?>
+                        </td>
                         <td class="text-end">
                             <a href="<?= BASE_URL ?>/service_orders.php?action=view&id=<?= $os['id'] ?>" class="btn btn-info btn-sm" title="Visualizar">
                                 <i class="fas fa-eye"></i>
@@ -647,6 +666,24 @@ include_once 'includes/header.php';
                 <p><strong>Data de Fechamento:</strong> <?= $service_order['data_fechamento'] ? format_date($service_order['data_fechamento']) : 'Em aberto' ?></p>
                 <?php if ($service_order['status'] == STATUS_COMPLETED): ?>
                 <p><strong>Valor Total:</strong> <?= format_currency($service_order['valor_total']) ?></p>
+                
+                <?php if (isset($service_order['satisfaction_rating']) && $service_order['satisfaction_rating'] > 0): ?>
+                <p>
+                    <strong>Avaliação do Cliente:</strong>
+                    <span class="service-rating">
+                        <?php 
+                        $rating = $service_order['satisfaction_rating'];
+                        for($i=1; $i<=5; $i++) {
+                            if($i <= $rating) {
+                                echo '<i class="fas fa-star text-warning"></i>';
+                            } else {
+                                echo '<i class="far fa-star text-warning"></i>';
+                            }
+                        }
+                        ?>
+                    </span>
+                </p>
+                <?php endif; ?>
                 <?php endif; ?>
             </div>
         </div>
@@ -709,6 +746,24 @@ include_once 'includes/header.php';
             <p><strong>Data de Fechamento:</strong> <?= $service_order['data_fechamento'] ? format_date($service_order['data_fechamento']) : 'Em aberto' ?></p>
             <?php if ($service_order['status'] == STATUS_COMPLETED): ?>
             <p><strong>Valor Total:</strong> <?= format_currency($service_order['valor_total']) ?></p>
+            
+            <?php if (isset($service_order['satisfaction_rating']) && $service_order['satisfaction_rating'] > 0): ?>
+            <p>
+                <strong>Avaliação do Cliente:</strong>
+                <span class="service-rating">
+                    <?php 
+                    $rating = $service_order['satisfaction_rating'];
+                    for($i=1; $i<=5; $i++) {
+                        if($i <= $rating) {
+                            echo '<i class="fas fa-star text-warning"></i>';
+                        } else {
+                            echo '<i class="far fa-star text-warning"></i>';
+                        }
+                    }
+                    ?>
+                </span>
+            </p>
+            <?php endif; ?>
             <?php endif; ?>
         </div>
     </div>
