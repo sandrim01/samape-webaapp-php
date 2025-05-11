@@ -2,18 +2,38 @@
 /**
  * SAMAPE - System Setup
  * Initializes the database and creates default data
+ * Restricted to administrator users only
  */
 
-// Include database configuration
-require_once 'config/database.php';
-require_once 'config/config.php';
+// Include initialization file which loads config, database, auth functions etc.
+require_once 'config/init.php';
 
-// Create database connection
+// First check if the system is already set up
+// If not, initialize it before checking permissions
 $database = new Database();
+$db = $database->connect();
 
-// Initialize the database schema
+// Try to initialize the schema first (will create admin user if needed)
 try {
     $database->initialize_schema();
+    $initialized = true;
+} catch (PDOException $e) {
+    $initialized = false;
+    error_log("Setup initialization error: " . $e->getMessage());
+}
+
+// Check if the user is logged in and has admin rights
+if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== ROLE_ADMIN) {
+    // Store an error message in session
+    $_SESSION['error'] = "Acesso restrito. Apenas administradores podem acessar a página de configuração.";
+    
+    // Redirect to login page
+    header("Location: " . BASE_URL . "/login.php");
+    exit;
+}
+
+// Initialize the database schema (again if needed)
+try {
     $success = true;
     $message = "Sistema inicializado com sucesso!";
 } catch (PDOException $e) {
@@ -85,11 +105,11 @@ if ($success && isset($_GET['sample_data']) && $_GET['sample_data'] == 1) {
             
             // Create sample users (besides the default admin)
             $users = [
-                ['Gerente Operacional', 'gerente@samape.com.br', password_hash('gerente123', PASSWORD_DEFAULT), 'gerente'],
-                ['Técnico Operacional', 'tecnico@samape.com.br', password_hash('tecnico123', PASSWORD_DEFAULT), 'funcionario']
+                ['Gerente Operacional', 'gerente', 'gerente@samape.com.br', password_hash('gerente123', PASSWORD_DEFAULT), 'gerente'],
+                ['Técnico Operacional', 'tecnico', 'tecnico@samape.com.br', password_hash('tecnico123', PASSWORD_DEFAULT), 'funcionario']
             ];
             
-            $stmt = $db->prepare("INSERT INTO usuarios (nome, email, senha_hash, papel) VALUES (?, ?, ?, ?)");
+            $stmt = $db->prepare("INSERT INTO usuarios (nome, username, email, senha_hash, papel) VALUES (?, ?, ?, ?, ?)");
             foreach ($users as $user) {
                 $stmt->execute($user);
             }
