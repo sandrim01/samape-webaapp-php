@@ -10,6 +10,7 @@ $page_description = "Gerenciamento de ordens de serviço";
 
 // Include initialization file
 require_once 'config/init.php';
+require_once 'includes/gamification.php';
 
 // Require user to be logged in
 require_login();
