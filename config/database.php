@@ -34,6 +34,7 @@ class Database {
         $conn->exec("CREATE TABLE IF NOT EXISTS usuarios (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nome TEXT NOT NULL,
+            username TEXT NOT NULL UNIQUE,
             email TEXT NOT NULL UNIQUE,
             senha_hash TEXT NOT NULL,
             papel TEXT NOT NULL,
@@ -132,8 +133,8 @@ class Database {
         if ($result['count'] == 0) {
             // Create default admin user
             $default_password = password_hash('admin123', PASSWORD_DEFAULT);
-            $stmt = $conn->prepare("INSERT INTO usuarios (nome, email, senha_hash, papel) VALUES (?, ?, ?, ?)");
-            $stmt->execute(['Administrador', 'admin@samape.com', $default_password, 'administrador']);
+            $stmt = $conn->prepare("INSERT INTO usuarios (nome, username, email, senha_hash, papel) VALUES (?, ?, ?, ?, ?)");
+            $stmt->execute(['Administrador', 'admin', 'admin@samape.com', $default_password, 'administrador']);
         }
     }
 }

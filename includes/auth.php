@@ -54,16 +54,24 @@ function require_permission($roles) {
 
 /**
  * Login a user
- * @param string $email User's email
+ * @param string $username User's username or email
  * @param string $password User's password
  * @return bool True if login successful, false otherwise
  */
-function login_user($email, $password) {
+function login_user($username, $password) {
     global $db;
     
     try {
-        $stmt = $db->prepare("SELECT id, nome, email, senha_hash, papel FROM usuarios WHERE email = ?");
-        $stmt->execute([$email]);
+        // Check if the input is a username or email based on format
+        if (filter_var($username, FILTER_VALIDATE_EMAIL)) {
+            // It's an email
+            $stmt = $db->prepare("SELECT id, nome, email, senha_hash, papel FROM usuarios WHERE email = ?");
+        } else {
+            // It's a username
+            $stmt = $db->prepare("SELECT id, nome, email, senha_hash, papel FROM usuarios WHERE username = ?");
+        }
+        
+        $stmt->execute([$username]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
         
         if ($user && password_verify($password, $user['senha_hash'])) {

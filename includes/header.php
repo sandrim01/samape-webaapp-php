@@ -83,8 +83,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/config/init.php';
     <div class="container py-5">
         <div class="row mb-4">
             <div class="col-md-6 mx-auto text-center">
-                <img src="<?= BASE_URL ?>/assets/img/logo.png" alt="SAMAPE Logo" class="img-fluid mb-3" style="max-height: 150px;">
-                <p class="lead">Sistema de Gestão de Assistência Técnica</p>
+                <img src="<?= BASE_URL ?>/assets/img/logo.png" alt="SAMAPE Logo" class="img-fluid mb-3" style="max-height: 200px;">
             </div>
         </div>
         

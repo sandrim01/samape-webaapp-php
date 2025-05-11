@@ -25,17 +25,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
     
-    $email = $_POST['email'] ?? '';
+    $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
     
     // Validate input
-    if (empty($email) || empty($password)) {
+    if (empty($username) || empty($password)) {
         $_SESSION['error'] = "Por favor, preencha todos os campos.";
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $_SESSION['error'] = "Por favor, forneça um email válido.";
     } else {
         // Attempt login
-        if (login_user($email, $password)) {
+        if (login_user($username, $password)) {
             // Successful login, redirect to originally requested page or dashboard
             $redirect_to = $_SESSION['redirect_to'] ?? BASE_URL . "/dashboard.php";
             unset($_SESSION['redirect_to']);
@@ -56,8 +54,7 @@ include_once 'includes/header.php';
     <div class="col-md-6 col-lg-5">
         <div class="login-container">
             <div class="login-logo text-center mb-4">
-                <img src="<?= BASE_URL ?>/assets/img/logo.png" alt="SAMAPE Logo" class="img-fluid mb-2" style="max-height: 120px;">
-                <p class="text-muted">Assistência Técnica e Manutenção de Maquinário Pesado</p>
+                <img src="<?= BASE_URL ?>/assets/img/logo.png" alt="SAMAPE Logo" class="img-fluid mb-4" style="max-height: 200px;">
             </div>
             
             <div class="card">
@@ -68,13 +65,13 @@ include_once 'includes/header.php';
                         <?= csrf_token_input() ?>
                         
                         <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
+                            <label for="username" class="form-label">Nome de Usuário</label>
                             <div class="input-group">
-                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                                <input type="email" class="form-control" id="email" name="email" placeholder="seu.email@exemplo.com" required>
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                <input type="text" class="form-control" id="username" name="username" placeholder="Nome de usuário" required>
                             </div>
                             <div class="invalid-feedback">
-                                Por favor, informe um email válido.
+                                Por favor, informe seu nome de usuário.
                             </div>
                         </div>
                         
