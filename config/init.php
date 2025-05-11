@@ -61,8 +61,19 @@ function check_session_timeout() {
         session_destroy();   // destroy session data
         
         // Redirect to login page
-        header("Location: " . BASE_URL . "/login.php?timeout=1");
-        exit;
+        $redirect_url = BASE_URL . "/login.php?timeout=1";
+        
+        // Try headers first (might fail if output already started)
+        if (!headers_sent()) {
+            header("Location: " . $redirect_url);
+            exit;
+        } else {
+            // Fallback to meta refresh
+            echo '<meta http-equiv="refresh" content="0;url=' . $redirect_url . '">';
+            echo '<script>window.location.href="' . $redirect_url . '";</script>';
+            echo 'If you are not redirected automatically, please <a href="' . $redirect_url . '">click here</a>.';
+            exit;
+        }
     }
 
     // Update last activity time
