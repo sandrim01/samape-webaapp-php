@@ -5,18 +5,29 @@
  */
 
 class Database {
-    private $host = '127.0.0.1';
-    private $db_name = 'samape';
-    private $username = 'root';
-    private $password = '';
+    private $host;
+    private $db_name;
+    private $username;
+    private $password;
+    private $port;
     private $conn;
+
+    public function __construct() {
+        // Use Replit PostgreSQL environment variables
+        $this->host = getenv('PGHOST');
+        $this->db_name = getenv('PGDATABASE');
+        $this->username = getenv('PGUSER');
+        $this->password = getenv('PGPASSWORD');
+        $this->port = getenv('PGPORT');
+    }
 
     public function connect() {
         $this->conn = null;
 
         try {
-            // SQLite connection for Replit
-            $this->conn = new PDO("sqlite:" . $_SERVER['DOCUMENT_ROOT'] . "/database.db");
+            // PostgreSQL connection for Replit
+            $dsn = "pgsql:host={$this->host};port={$this->port};dbname={$this->db_name}";
+            $this->conn = new PDO($dsn, $this->username, $this->password);
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
         } catch(PDOException $e) {
@@ -32,19 +43,19 @@ class Database {
         
         // Create users table
         $conn->exec("CREATE TABLE IF NOT EXISTS usuarios (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nome TEXT NOT NULL,
-            username TEXT NOT NULL UNIQUE,
-            email TEXT NOT NULL UNIQUE,
-            senha_hash TEXT NOT NULL,
-            papel TEXT NOT NULL,
+            id SERIAL PRIMARY KEY,
+            nome VARCHAR(255) NOT NULL,
+            username VARCHAR(100) NOT NULL UNIQUE,
+            email VARCHAR(255) NOT NULL UNIQUE,
+            senha_hash VARCHAR(255) NOT NULL,
+            papel VARCHAR(50) NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )");
         
         // Create logs table
         $conn->exec("CREATE TABLE IF NOT EXISTS logs (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             usuario_id INTEGER,
             acao TEXT NOT NULL,
             datahora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -53,11 +64,11 @@ class Database {
         
         // Create clients table
         $conn->exec("CREATE TABLE IF NOT EXISTS clientes (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nome TEXT NOT NULL,
-            cnpj TEXT,
-            telefone TEXT,
-            email TEXT,
+            id SERIAL PRIMARY KEY,
+            nome VARCHAR(255) NOT NULL,
+            cnpj VARCHAR(100),
+            telefone VARCHAR(50),
+            email VARCHAR(255),
             endereco TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -65,12 +76,12 @@ class Database {
         
         // Create machinery table
         $conn->exec("CREATE TABLE IF NOT EXISTS maquinarios (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             cliente_id INTEGER NOT NULL,
-            tipo TEXT NOT NULL,
-            marca TEXT NOT NULL,
-            modelo TEXT NOT NULL,
-            numero_serie TEXT,
+            tipo VARCHAR(100) NOT NULL,
+            marca VARCHAR(100) NOT NULL,
+            modelo VARCHAR(100) NOT NULL,
+            numero_serie VARCHAR(100),
             ano INTEGER,
             ultima_manutencao DATE,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -80,14 +91,14 @@ class Database {
         
         // Create service orders table
         $conn->exec("CREATE TABLE IF NOT EXISTS ordens_servico (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             cliente_id INTEGER NOT NULL,
             maquinario_id INTEGER NOT NULL,
             descricao TEXT NOT NULL,
-            status TEXT NOT NULL,
+            status VARCHAR(50) NOT NULL,
             data_abertura DATE NOT NULL,
             data_fechamento DATE,
-            valor_total REAL,
+            valor_total DECIMAL(10,2),
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (cliente_id) REFERENCES clientes(id),
@@ -96,18 +107,18 @@ class Database {
         
         // Create employees table
         $conn->exec("CREATE TABLE IF NOT EXISTS funcionarios (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nome TEXT NOT NULL,
-            cargo TEXT NOT NULL,
-            email TEXT,
-            ativo INTEGER DEFAULT 1,
+            id SERIAL PRIMARY KEY,
+            nome VARCHAR(255) NOT NULL,
+            cargo VARCHAR(100) NOT NULL,
+            email VARCHAR(255),
+            ativo SMALLINT DEFAULT 1,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )");
         
         // Create relationship table between service orders and employees
         $conn->exec("CREATE TABLE IF NOT EXISTS os_funcionarios (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             ordem_id INTEGER NOT NULL,
             funcionario_id INTEGER NOT NULL,
             FOREIGN KEY (ordem_id) REFERENCES ordens_servico(id),
@@ -116,9 +127,9 @@ class Database {
         
         // Create financial table
         $conn->exec("CREATE TABLE IF NOT EXISTS financeiro (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            tipo TEXT NOT NULL,
-            valor REAL NOT NULL,
+            id SERIAL PRIMARY KEY,
+            tipo VARCHAR(50) NOT NULL,
+            valor DECIMAL(10,2) NOT NULL,
             descricao TEXT,
             data DATE NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

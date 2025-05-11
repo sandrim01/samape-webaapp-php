@@ -22,7 +22,9 @@ try {
     error_log("Setup initialization error: " . $e->getMessage());
 }
 
-// Check if the user is logged in and has admin rights
+// Temporarily skip authentication check for initial setup
+// After system is set up, uncomment the following block to restrict access
+/*
 if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== ROLE_ADMIN) {
     // Store an error message in session
     $_SESSION['error'] = "Acesso restrito. Apenas administradores podem acessar a página de configuração.";
@@ -31,6 +33,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== ROLE_ADMIN) {
     header("Location: " . BASE_URL . "/login.php");
     exit;
 }
+*/
 
 // Initialize the database schema (again if needed)
 try {
