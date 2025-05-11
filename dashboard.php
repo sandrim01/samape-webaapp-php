@@ -10,9 +10,13 @@ $page_description = "Visão geral do sistema";
 
 // Include initialization file
 require_once 'config/init.php';
+require_once 'includes/gamification.php';
 
 // Require user to be logged in
 require_login();
+
+// Get database connection
+$db = $GLOBALS['db'];
 
 // Get service order statistics
 $order_counts = get_service_order_counts();
@@ -24,6 +28,22 @@ $financial_summary = get_monthly_financial_summary($current_year, $current_month
 
 // Get recent activity logs
 $recent_logs = get_recent_logs(10);
+
+// Create default achievements if they don't exist
+create_default_achievements($db);
+
+// Get user gamification data
+$user_achievements = get_user_achievements($db, $_SESSION['user_id']);
+$employee_id = get_employee_id_from_user($db, $_SESSION['user_id']);
+$user_stats = null;
+
+if ($employee_id) {
+    $user_stats = get_employee_stats($db, $employee_id);
+}
+
+// Get top employees for dashboard
+$top_employees = get_leaderboard($db, 'points');
+$top_employees = array_slice($top_employees, 0, 3);
 
 // Include page header
 include_once 'includes/header.php';
@@ -113,6 +133,138 @@ include_once 'includes/header.php';
             </div>
             <div class="card-footer text-end">
                 <a href="<?= BASE_URL ?>/financial.php" class="btn btn-sm btn-primary">Ver Detalhes</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Gamification Row -->
+<div class="row mb-4">
+    <!-- User Gamification Stats -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-trophy"></i> Seu Progresso
+                </h5>
+            </div>
+            <div class="card-body">
+                <?php if ($user_stats): ?>
+                <div class="text-center mb-4">
+                    <div class="user-level-badge">
+                        <span class="level"><?= $user_stats['level'] ?></span>
+                    </div>
+                    <h4 class="mt-2">Nível <?= $user_stats['level'] ?></h4>
+                    <p>
+                        <strong><?= $user_stats['points'] ?></strong> pontos acumulados
+                    </p>
+                    
+                    <!-- Progress to next level -->
+                    <?php 
+                    $next_level = min($user_stats['level'] + 1, 10);
+                    $points_for_next = $next_level * 100;
+                    $current_level_min = ($user_stats['level'] - 1) * 100;
+                    $progress = ($user_stats['points'] - $current_level_min) / ($points_for_next - $current_level_min) * 100;
+                    ?>
+                    
+                    <?php if ($user_stats['level'] < 10): ?>
+                    <div class="progress mb-2">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: <?= $progress ?>%;" 
+                            aria-valuenow="<?= $progress ?>" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <small class="text-muted">
+                        <?= $points_for_next - $user_stats['points'] ?> pontos para o Nível <?= $next_level ?>
+                    </small>
+                    <?php else: ?>
+                    <div class="alert alert-success">
+                        <i class="fas fa-crown"></i> Você atingiu o nível máximo!
+                    </div>
+                    <?php endif; ?>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-6 text-center">
+                        <div class="stat-circle">
+                            <i class="fas fa-tools"></i>
+                            <span><?= $user_stats['services_completed'] ?></span>
+                        </div>
+                        <p class="mt-1">Serviços Concluídos</p>
+                    </div>
+                    <div class="col-6 text-center">
+                        <div class="stat-circle">
+                            <i class="fas fa-star"></i>
+                            <span><?= number_format($user_stats['avg_satisfaction'], 1) ?></span>
+                        </div>
+                        <p class="mt-1">Avaliação Média</p>
+                    </div>
+                </div>
+                <?php else: ?>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> Você ainda não tem dados de progresso registrados. Complete ordens de serviço para ganhar pontos e subir de nível.
+                </div>
+                <?php endif; ?>
+                
+                <div class="text-center mt-3">
+                    <a href="<?= BASE_URL ?>/gamification.php" class="btn btn-outline-primary">
+                        <i class="fas fa-medal"></i> Ver Todas as Conquistas
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Top Employees / Achievements -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-success text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-award"></i> Top Técnicos
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th width="5%">#</th>
+                                <th>Técnico</th>
+                                <th class="text-center">Nível</th>
+                                <th class="text-center">Pontos</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach($top_employees as $index => $emp): ?>
+                            <tr>
+                                <td>
+                                    <?php if($index === 0): ?>
+                                    <i class="fas fa-trophy text-warning"></i>
+                                    <?php elseif($index === 1): ?>
+                                    <i class="fas fa-trophy text-secondary"></i>
+                                    <?php elseif($index === 2): ?>
+                                    <i class="fas fa-trophy text-danger"></i>
+                                    <?php else: ?>
+                                    <?= $index + 1 ?>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <?= htmlspecialchars($emp['nome']) ?>
+                                    <small class="text-muted d-block"><?= htmlspecialchars($emp['cargo']) ?></small>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-primary"><?= $emp['level'] ?></span>
+                                </td>
+                                <td class="text-center"><?= $emp['points'] ?></td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="text-center mt-3">
+                    <a href="<?= BASE_URL ?>/gamification.php?action=leaderboard" class="btn btn-outline-success">
+                        <i class="fas fa-list"></i> Ver Classificação Completa
+                    </a>
+                </div>
             </div>
         </div>
     </div>

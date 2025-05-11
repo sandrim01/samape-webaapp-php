@@ -496,3 +496,87 @@ body {
 .rating-stars input:checked ~ label:hover ~ label {
     color: #ffac00;
 }
+
+/* Gamification Styles */
+.user-level-badge {
+    width: 80px;
+    height: 80px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    border: 4px solid #0056b3;
+    font-size: 2.5rem;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.stat-circle {
+    width: 60px;
+    height: 60px;
+    background-color: #f8f9fa;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    border: 2px solid #dee2e6;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.stat-circle i {
+    font-size: 1.2rem;
+    color: #6c757d;
+}
+
+.stat-circle span {
+    font-weight: bold;
+    font-size: 1rem;
+    margin-top: 2px;
+}
+
+.achievement-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    font-size: 1.5rem;
+}
+
+.achievement-icon.earned {
+    background-color: #28a745;
+    color: white;
+    border: 2px solid #218838;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.achievement-icon.locked {
+    background-color: #6c757d;
+    color: white;
+    border: 2px solid #5a6268;
+    opacity: 0.7;
+}
+
+.achievement-item {
+    display: flex;
+    align-items: center;
+}
+
+.achievement-details {
+    margin-left: 15px;
+    flex: 1;
+}
+
+.achievement-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 5px;
+}
