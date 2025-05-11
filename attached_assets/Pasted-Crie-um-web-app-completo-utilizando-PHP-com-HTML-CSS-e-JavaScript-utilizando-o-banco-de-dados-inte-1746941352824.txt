@@ -1,0 +1,145 @@
+Crie um web app completo utilizando PHP com HTML, CSS e JavaScript, utilizando o banco de dados integrado da Replit (MySQL ou SQLite) para a empresa fictícia SAMAPE, especializada em assistência técnica e manutenção de maquinário pesado.
+
+O projeto deve ser totalmente funcional, seguro e com versionamento conectado ao GitHub.
+
+🔧 Stack de Tecnologias Obrigatórias
+Backend: PHP 8+
+
+Frontend: HTML5, CSS3, JavaScript
+
+CSS Framework: Bootstrap 5 (ou Tailwind CSS)
+
+Banco de dados: Banco nativo da Replit (MySQL ou SQLite)
+
+ORM (opcional): PDO para acesso seguro ao banco
+
+Login com hash de senha seguro (bcrypt ou password_hash)
+
+Controle de papéis de usuário
+
+GitHub conectado (Commit & Push manual ou automático)
+
+🔐 Segurança e Autenticação
+Implementar login com autenticação baseada em papel de usuário:
+
+Administrador
+
+Gerente
+
+Funcionário
+
+Armazenar senhas com password_hash() e verificar com password_verify()
+
+Proteger contra:
+
+SQL Injection (via PDO com prepared statements)
+
+CSRF (via tokens em formulários)
+
+XSS (com htmlspecialchars nas saídas)
+
+Sessões seguras com tempo de expiração
+
+Toda rota protegida por verificação de login e papel
+
+Sistema de log de atividades dos usuários (login, logout, criação/edição de dados)
+
+🧾 Funcionalidades principais do sistema SAMAPE
+1. Página de Login Inicial
+Autenticação obrigatória
+
+Redirecionamento seguro após login
+
+Sessão com timeout configurável
+
+2. Dashboard
+Exibe cards/tabelas com:
+
+Quantidade de OS abertas/em andamento/fechadas
+
+Total faturado no mês
+
+Log de atividades recentes
+
+Pendências ou alertas
+
+3. Gestão de Ordens de Serviço (OS)
+Criar, editar, listar, fechar
+
+Relacionar a cliente e funcionários
+
+Geração de dados da NF-e ao fechar a OS
+
+Filtros por status, cliente, data, responsável
+
+4. Cadastro de Clientes e Maquinário
+Campos para nome, CNPJ/CPF, telefone, email, endereço
+
+Cada cliente pode ter múltiplos maquinários:
+
+tipo, marca, modelo, número de série, ano, última manutenção
+
+5. Gestão de Funcionários
+Nome, cargo, email, status (ativo/inativo)
+
+Controle de acesso baseado no papel
+
+6. Financeiro
+Entradas (valores faturados das OS)
+
+Saídas (gastos operacionais)
+
+Relatórios mensais
+
+Exportação de dados em CSV
+
+🧱 Banco de Dados (MySQL ou SQLite no Replit)
+Crie as seguintes tabelas:
+
+usuarios (id, nome, email, senha_hash, papel)
+
+logs (id, usuario_id, acao, datahora)
+
+clientes (id, nome, cnpj, telefone, email, endereco)
+
+maquinarios (id, cliente_id, tipo, marca, modelo, numero_serie, ano, ultima_manutencao)
+
+ordens_servico (id, cliente_id, descricao, status, data_abertura, data_fechamento, valor_total)
+
+funcionarios (id, nome, cargo, email, ativo)
+
+os_funcionarios (ordem_id, funcionario_id) — relacionamento muitos-para-muitos
+
+financeiro (id, tipo, valor, descricao, data)
+
+A conexão deve ser feita usando PDO com DSN apropriado para o banco da Replit:
+
+php
+Copiar
+Editar
+new PDO("sqlite:/home/runner/SEU_PROJETO/data.db"); // para SQLite
+// ou
+new PDO("mysql:host=127.0.0.1;dbname=replit", "root", ""); // para MySQL da Replit
+As credenciais e caminhos devem estar protegidos usando variáveis de ambiente no Replit (Secrets).
+
+🛠️ Integração com GitHub (no Replit)
+Conectar a conta do GitHub ao Replit.
+
+Criar repositório com o nome samape-webapp.
+
+Toda alteração deve ser:
+
+Comitada com mensagem descritiva.
+
+Enviada (push) para o GitHub via Replit Git.
+
+📄 Extras (opcional se quiser caprichar mais)
+Tela "Sobre a Empresa" com história da Samape
+
+Exportação de dados (clientes, OS, financeiro) em CSV ou PDF
+
+Tela de impressão da OS
+
+Geração automática de PDF da OS ou da NF-e
+
+Dark Mode no frontend
